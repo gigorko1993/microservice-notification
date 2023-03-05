@@ -141,6 +141,34 @@
                     "ses:SendEmail"
                   ],
                   "Resource": "arn:aws:ses:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sqs:ReceiveMessage"
+                  ],
+                  "Resource": {
+                    "Fn::GetAtt": [
+                      "MailQueue",
+                      "Arn"
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "MailQueue",
+                        "Arn"
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -169,7 +197,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/microservice-notification/dev/1678015627310-2023-03-05T11:27:07.310Z/microservice-notification.zip"
+          "S3Key": "serverless/microservice-notification/dev/1678019058167-2023-03-05T12:24:18.167Z/microservice-notification.zip"
         },
         "Handler": "src/handlers/sendEmail.handler",
         "Runtime": "nodejs16.x",
@@ -187,14 +215,42 @@
         "SendEmailLogGroup"
       ]
     },
-    "SendEmailLambdaVersionZhhjFkypzOCA80vf3plqz7pv3Y0SMOSyyxOh11UvRk": {
+    "SendEmailLambdaVersion7l3nevOLq9Lm14i62VPggSpAotwuRp9mw5oMIeGVWA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "SendEmailLambdaFunction"
         },
-        "CodeSha256": "EA3CJ0Vt+In2t3j5QsqXMrl/CFe3mRgAPKvaVkeWdVg="
+        "CodeSha256": "MsOwjKQA7qVPYOCU9X5WyKJ94CW5C/Jx8E3zxFQcPoo="
+      }
+    },
+    "SendEmailEventSourceMappingSQSMailQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ],
+      "Properties": {
+        "BatchSize": 1,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "MailQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "SendEmailLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true
+      }
+    },
+    "MailQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "MailQueue-dev"
       }
     }
   },
@@ -210,7 +266,7 @@
     "SendEmailLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "SendEmailLambdaVersionZhhjFkypzOCA80vf3plqz7pv3Y0SMOSyyxOh11UvRk"
+        "Ref": "SendEmailLambdaVersion7l3nevOLq9Lm14i62VPggSpAotwuRp9mw5oMIeGVWA"
       },
       "Export": {
         "Name": "sls-microservice-notification-dev-SendEmailLambdaFunctionQualifiedArn"

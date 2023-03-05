@@ -12,12 +12,34 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   profile: pdp-auction
-  iamRoleStatements:
-    - Effect: 'Allow'
-      Action:
-       - ses:SendEmail
-      Resource: arn:aws:ses:*
+  iam:
+   role:
+    statements:
+      - Effect: 'Allow'
+        Action:
+         - ses:SendEmail
+        Resource: arn:aws:ses:*
+      - Effect: Allow
+        Action:
+         - sqs:ReceiveMessage
+        Resource: ${self:custom.mailQueue.arn}
+
+custom:
+  mailQueue:
+    name: MailQueue-${self:provider.stage}
+    arn: !GetAtt MailQueue.Arn
   
 functions:
   sendEmail:
     handler: src/handlers/sendEmail.handler
+    events:
+      - sqs:
+          arn: ${self:custom.mailQueue.arn}
+          batchSize: 1          
+
+resources:
+  Resources:
+   MailQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:custom.mailQueue.name}
