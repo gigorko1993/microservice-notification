@@ -197,7 +197,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/microservice-notification/dev/1678019058167-2023-03-05T12:24:18.167Z/microservice-notification.zip"
+          "S3Key": "serverless/microservice-notification/dev/1678042313772-2023-03-05T18:51:53.772Z/microservice-notification.zip"
         },
         "Handler": "src/handlers/sendEmail.handler",
         "Runtime": "nodejs16.x",
@@ -215,14 +215,14 @@
         "SendEmailLogGroup"
       ]
     },
-    "SendEmailLambdaVersion7l3nevOLq9Lm14i62VPggSpAotwuRp9mw5oMIeGVWA": {
+    "SendEmailLambdaVersionhRQM4bAv2vMWIMauvlEwbNH7xY8Ud7txyqQK0cV4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "SendEmailLambdaFunction"
         },
-        "CodeSha256": "MsOwjKQA7qVPYOCU9X5WyKJ94CW5C/Jx8E3zxFQcPoo="
+        "CodeSha256": "vJ8ooebgNEsNoEUIcKpLvNsYohh41ClPxMs7JAHLABE="
       }
     },
     "SendEmailEventSourceMappingSQSMailQueue": {
@@ -266,10 +266,29 @@
     "SendEmailLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "SendEmailLambdaVersion7l3nevOLq9Lm14i62VPggSpAotwuRp9mw5oMIeGVWA"
+        "Ref": "SendEmailLambdaVersionhRQM4bAv2vMWIMauvlEwbNH7xY8Ud7txyqQK0cV4"
       },
       "Export": {
         "Name": "sls-microservice-notification-dev-SendEmailLambdaFunctionQualifiedArn"
+      }
+    },
+    "MailQueueArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MailQueue",
+          "Arn"
+        ]
+      },
+      "Export": {
+        "Name": "MailQueue-dev-Arn"
+      }
+    },
+    "MailQueueUrl": {
+      "Value": {
+        "Ref": "MailQueue"
+      },
+      "Export": {
+        "Name": "MailQueue-dev-Url"
       }
     }
   }
